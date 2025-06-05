@@ -10,6 +10,8 @@ app.secret_key = 'ini_kunci_rahasia_123'  # <<-- DI SINI
 
 UPLOAD_FOLDER = 'static/hasil'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 @app.route('/')
 def index():

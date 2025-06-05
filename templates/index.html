@@ -54,6 +54,76 @@
       </div>
     </nav>
 
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="editModal"
+      tabindex="-1"
+      aria-labelledby="editModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Resize Gambar</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <label class="form-label">Aspect Ratio:</label>
+            <select class="form-select mb-3" id="aspectRatioSelect">
+              <option value="1:1">1:1 (Square)</option>
+              <option value="1:2">1:2 (Portrait)</option>
+              <option value="2:1">2:1 (Landscape)</option>
+              <option value="custom">Custom</option>
+            </select>
+
+            <div class="row g-2">
+              <div class="col">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="customWidth"
+                  placeholder="Width (px)"
+                  disabled
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="customHeight"
+                  placeholder="Height (px)"
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="resizeImage()"
+              data-bs-dismiss="modal"
+            >
+              Terapkan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- isi -->
 
     <div class="container py-5">
@@ -62,10 +132,8 @@
           <div class="form bg-light rounded">
             <h2 class="bg-warning p-3 rounded-top-1">Upload Gambar</h2>
             <form
-              method="POST"
-              action="/upload"
               enctype="multipart/form-data"
-              class="p-3 d-flex flex-column flex-sm-row align-items-center"
+              class="p-3 d-flex flex-column flex-sm-row align-items-center gap-2 flex-wrap"
             >
               <input
                 type="file"
@@ -73,15 +141,23 @@
                 accept="image/*"
                 required
                 class="border p-3"
+                id="imageInput"
               />
 
               <button
-                type="submit"
-                class="btn btn-primary ms-sm-3 mt-3 mt-sm-0"
+                type="button"
+                class="btn btn-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal"
               >
+                Edit
+              </button>
+
+              <button type="submit" class="btn btn-primary">
                 Deteksi Tepi
               </button>
             </form>
+
             <img
               id="preview"
               src="#"
@@ -144,6 +220,77 @@
             preview.style.display = "none";
           }
         });
+
+      const preview = document.getElementById("preview");
+
+      document
+        .querySelector('input[type="file"]')
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+
+          if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              preview.src = e.target.result;
+              preview.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+          } else {
+            preview.src = "#";
+            preview.style.display = "none";
+          }
+        });
+
+      const aspectSelect = document.getElementById("aspectRatioSelect");
+      const widthInput = document.getElementById("customWidth");
+      const heightInput = document.getElementById("customHeight");
+
+      aspectSelect.addEventListener("change", function () {
+        const val = this.value;
+        const disable = val !== "custom";
+        widthInput.disabled = disable;
+        heightInput.disabled = disable;
+      });
+
+      function resizeImage() {
+        if (!preview.src || preview.src === "#") return;
+
+        const img = new Image();
+        img.src = preview.src;
+
+        img.onload = () => {
+          let canvas = document.createElement("canvas");
+          let ctx = canvas.getContext("2d");
+
+          let newWidth = img.width;
+          let newHeight = img.height;
+
+          const aspect = aspectSelect.value;
+
+          if (aspect === "1:1") {
+            const size = Math.min(img.width, img.height);
+            newWidth = size;
+            newHeight = size;
+          } else if (aspect === "1:2") {
+            newWidth = img.width;
+            newHeight = img.width * 2;
+          } else if (aspect === "2:1") {
+            newWidth = img.width;
+            newHeight = img.width / 2;
+          } else if (aspect === "custom") {
+            newWidth = parseInt(widthInput.value);
+            newHeight = parseInt(heightInput.value);
+          }
+
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+          preview.src = canvas.toDataURL("image/png");
+        };
+      }
     </script>
   </body>
 </html>
