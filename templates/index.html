@@ -24,7 +24,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
       <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="index.html">Kelompok 6</a>
+        <a class="navbar-brand fw-bold" href="/">Kelompok 6</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -39,9 +39,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="index.html"
-                >Detection</a
-              >
+              <a class="nav-link" href="{{ url_for('result') }}">Result</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">About Us</a>
@@ -132,6 +130,8 @@
           <div class="form bg-light rounded">
             <h2 class="bg-warning p-3 rounded-top-1">Upload Gambar</h2>
             <form
+              action="/upload"
+              method="POST"
               enctype="multipart/form-data"
               class="p-3 d-flex flex-column flex-sm-row align-items-center gap-2 flex-wrap"
             >
@@ -144,18 +144,26 @@
                 id="imageInput"
               />
 
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal"
-              >
-                Edit
-              </button>
-
-              <button type="submit" class="btn btn-primary">
-                Deteksi Tepi
-              </button>
+              <div class="button-container d-flex align-items-center">
+                <button type="submit" class="btn btn-primary">
+                  Deteksi Tepi
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning ms-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger ms-2"
+                  onclick="removeImage()"
+                >
+                  Remove
+                </button>
+              </div>
             </form>
 
             <img
@@ -220,6 +228,18 @@
             preview.style.display = "none";
           }
         });
+
+      // remove image
+      function removeImage() {
+        const input = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+
+        input.value = "";
+        preview.src = "#";
+        preview.style.display = "none";
+      }
+
+      // preview image
 
       const preview = document.getElementById("preview");
 

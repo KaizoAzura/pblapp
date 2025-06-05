@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Deteksi</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .card-img-top {
+        height: 200px;
+        object-fit: cover;
+      }
+      .search-input {
+        max-width: 400px;
+      }
+    </style>
+  </head>
+  <body class="bg-dark text-light">
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">Kelompok 6</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('result') }}"
+                >Result</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About Us</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Documentation</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Cari Hasil Gambar Anda</h2>
+        <input
+          type="text"
+          class="form-control search-input"
+          placeholder="Cari gambar..."
+          id="searchInput"
+        />
+      </div>
+
+      <div class="row" id="imageContainer">
+        {% for gambar in hasil_gambar %}
+        <div
+          class="col-6 col-md-4 mb-4 image-item"
+          data-name="{{ gambar | lower }}"
+        >
+          <div class="card bg-light text-dark position-relative">
+            <img
+              src="{{ url_for('static', filename='hasil/' + gambar) }}"
+              class="card-img-top"
+              alt="{{ gambar }}"
+            />
+            <div class="card-body text-center">
+              <p class="card-text">{{ gambar }}</p>
+              <a
+                href="{{ url_for('static', filename='hasil/' + gambar) }}"
+                download="{{ gambar }}"
+                class="btn btn-primary btn-sm"
+                >Download</a
+              >
+              <!-- Tombol Remove -->
+              <button class="btn btn-danger btn-sm ms-2 remove-btn">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      // Search functionality
+      const searchInput = document.getElementById("searchInput");
+      const imageItems = document.querySelectorAll(".image-item");
+
+      searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase();
+        imageItems.forEach((item) => {
+          const name = item.getAttribute("data-name");
+          if (name.includes(query)) {
+            item.style.display = "";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+
+      // Remove image
+      const removeButtons = document.querySelectorAll(".remove-btn");
+      removeButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const card = e.target.closest(".image-item");
+          if (card) {
+            card.remove();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

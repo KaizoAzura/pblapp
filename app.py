@@ -18,6 +18,16 @@ def index():
     hasil_gambar = session.pop('hasil_gambar', None)
     return render_template('index.html', hasil_gambar=hasil_gambar)
 
+# result image route
+@app.route('/result')
+def result():
+    hasil_folder = app.config['UPLOAD_FOLDER']
+    semua_file = os.listdir(hasil_folder)
+    
+    hasil_gambar = [f for f in semua_file if f.startswith('hasil_')]
+    
+    return render_template('result.html', hasil_gambar=hasil_gambar)
+
 @app.route('/upload', methods=['POST'])
 def upload():
     file = request.files['gambar']
