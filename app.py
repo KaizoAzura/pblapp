@@ -2,61 +2,72 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import cv2
 import os
 from werkzeug.utils import secure_filename
-from PIL import Image
-import numpy as np
 
 app = Flask(__name__)
-app.secret_key = 'ini_kunci_rahasia_123'  # <<-- DI SINI
+app.secret_key = 'ini_kunci_rahasia_123'
 
-UPLOAD_FOLDER = 'static/hasil'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
-# route ke halaman utama
+FOLDER_HASIL = 'static/hasil'
+app.config['UPLOAD_FOLDER'] = FOLDER_HASIL
+
+# Pastikan folder hasil ada
+if not os.path.exists(FOLDER_HASIL):
+    os.makedirs(FOLDER_HASIL)
+
 @app.route('/')
 def index():
     hasil_gambar = session.pop('hasil_gambar', None)
-    return render_template('index.html', hasil_gambar=hasil_gambar)
+    nama_file_asli = session.pop('nama_file_asli', None)
+    nama_file_grayscale = session.pop('nama_file_grayscale', None)
+    return render_template(
+        'index.html',
+        hasil_gambar=hasil_gambar,
+        nama_file_asli=nama_file_asli,
+        nama_file_grayscale=nama_file_grayscale
+    )
 
-# rute ke hasil gambar
 @app.route('/result')
 def result():
-    hasil_folder = app.config['UPLOAD_FOLDER']
-    semua_file = os.listdir(hasil_folder)
-    
+    semua_file = os.listdir(FOLDER_HASIL)
     hasil_gambar = [f for f in semua_file if f.startswith('hasil_')]
-    
     return render_template('result.html', hasil_gambar=hasil_gambar)
 
-# rute halaman about us
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-# rute halaman dokumentasi
 @app.route('/documentation')
 def documentation():
     return render_template('documentation.html')
 
-
-# route upload gambar
 @app.route('/upload', methods=['POST'])
 def upload():
     file = request.files['gambar']
     if file:
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
 
-        img = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-        blur = cv2.GaussianBlur(img, (5, 5), 1.4)
+        # Simpan gambar asli
+        path_asli = os.path.join(FOLDER_HASIL, filename)
+        file.save(path_asli)
+
+        # Baca dan konversi ke grayscale
+        img = cv2.imread(path_asli)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        nama_gray = f"gray_{filename}"
+        path_gray = os.path.join(FOLDER_HASIL, nama_gray)
+        cv2.imwrite(path_gray, gray)
+
+        # Deteksi tepi
+        blur = cv2.GaussianBlur(gray, (5, 5), 1.4)
         edges = cv2.Canny(blur, 100, 200)
+        nama_hasil = f"hasil_{filename}"
+        path_hasil = os.path.join(FOLDER_HASIL, nama_hasil)
+        cv2.imwrite(path_hasil, edges)
 
-        hasil_filename = f"hasil_{filename}"
-        hasil_path = os.path.join(app.config['UPLOAD_FOLDER'], hasil_filename)
-        cv2.imwrite(hasil_path, edges)
+        # Simpan ke session
+        session['nama_file_asli'] = filename
+        session['nama_file_grayscale'] = nama_gray
+        session['hasil_gambar'] = nama_hasil
 
-        session['hasil_gambar'] = hasil_filename
         return redirect(url_for('index'))
 
     return 'No file uploaded', 400
