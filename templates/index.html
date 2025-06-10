@@ -179,25 +179,25 @@
         </div>
         <!-- ////// -->
         <div class="col-lg-6">
-          <div class="hasil bg-light rounded">
-            <h2 class="bg-warning p-3 rounded-top-1">Hasil Deteksi Tepi</h2>
-            <div class="p-3">
-              {% if hasil_gambar %}
-              <img
-                src="{{ url_for('static', filename='hasil/' + hasil_gambar) }}"
-                width="400"
-              />
-              <br />
-              <a
-                href="{{ url_for('static', filename='hasil/' + hasil_gambar) }}"
-                download="{{ hasil_gambar }}"
-                class="btn btn-primary mt-2"
-              >
-                Download
-              </a>
-              {% endif %}
-            </div>
-          </div>
+         <div class="hasil bg-light rounded">
+  <h2 class="bg-warning p-3 rounded-top-1">Hasil Deteksi Tepi</h2>
+  <div class="p-3">
+    {% if nama_file_asli %}
+    <h5>Gambar Asli:</h5>
+    <img src="{{ url_for('static', filename='hasil/' + nama_file_asli) }}" class="img-fluid mb-3" width="400" />
+
+    <h5>Grayscale:</h5>
+    <img src="{{ url_for('static', filename='hasil/' + nama_file_grayscale) }}" class="img-fluid mb-3" width="400" />
+
+    <h5>Deteksi Tepi:</h5>
+    <img src="{{ url_for('static', filename='hasil/' + hasil_gambar) }}" class="img-fluid mb-3" width="400" />
+
+    <a href="{{ url_for('static', filename='hasil/' + hasil_gambar) }}" download class="btn btn-primary mt-2">
+      Download Hasil Deteksi
+    </a>
+    {% endif %}
+  </div>
+</div>
         </div>
       </div>
     </div>
