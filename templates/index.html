@@ -42,10 +42,12 @@
               <a class="nav-link" href="{{ url_for('result') }}">Result</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">About Us</a>
+              <a class="nav-link" href="{{ url_for('about') }}">About Us</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Documentation</a>
+              <a class="nav-link" href="{{ url_for('documentation') }}"
+                >Documentation</a
+              >
             </li>
           </ul>
         </div>
@@ -131,11 +133,7 @@
             <h2 class="bg-warning p-3 rounded-top-1">Upload Gambar</h2>
             <form
               action="/upload"
-<<<<<<< HEAD
               method="POST"
-=======
-  method="POST"
->>>>>>> 64cfa2e3ab8d4020118ae25385cc148195c64422
               enctype="multipart/form-data"
               class="p-3 d-flex flex-column flex-sm-row align-items-center gap-2 flex-wrap"
             >

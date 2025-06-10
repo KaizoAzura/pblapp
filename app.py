@@ -12,13 +12,13 @@ UPLOAD_FOLDER = 'static/hasil'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
+# route ke halaman utama
 @app.route('/')
 def index():
     hasil_gambar = session.pop('hasil_gambar', None)
     return render_template('index.html', hasil_gambar=hasil_gambar)
 
-# result image route
+# rute ke hasil gambar
 @app.route('/result')
 def result():
     hasil_folder = app.config['UPLOAD_FOLDER']
@@ -28,6 +28,18 @@ def result():
     
     return render_template('result.html', hasil_gambar=hasil_gambar)
 
+# rute halaman about us
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# rute halaman dokumentasi
+@app.route('/documentation')
+def documentation():
+    return render_template('documentation.html')
+
+
+# route upload gambar
 @app.route('/upload', methods=['POST'])
 def upload():
     file = request.files['gambar']
